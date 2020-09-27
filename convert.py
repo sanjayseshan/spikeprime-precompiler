@@ -14,13 +14,6 @@ import serial.tools.list_ports
 import glob
 
 def listSerial():
-    """ Lists serial port names
-
-        :raises EnvironmentError:
-            On unsupported or unknown platforms
-        :returns:
-            A list of the serial ports available on the system
-    """
     if sys.platform.startswith('win'):
         ports = ['COM%s' % (i + 1) for i in range(256)]
     elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
@@ -30,7 +23,6 @@ def listSerial():
         ports = glob.glob('/dev/tty.*')
     else:
         raise EnvironmentError('Unsupported platform')
-
     result = []
     for port in ports:
         try:
@@ -57,25 +49,41 @@ def handle_upload_rpc(port, file, slot):
                 pbar.update(len(b))
                 b = f.read(bs)
 
-@Gooey(program_name="SPIKE Prime RAM Saver")
+@Gooey(program_name="SPIKE Prime RAM Saver ", tabbed_groups=True, navigation='Tabbed')
 def main():
     parser = GooeyParser(description='Pre-Compile a SPIKE Prime program and upload it to the hub.')
 
-    parser.add_argument("--port", help="Serial port of the SPIKE Prime", required=True, widget='Dropdown',choices=listSerial())
-    parser.add_argument("--slot", help="Current slot of program/Slot to upload to", required=True, widget='Dropdown',choices=["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"])
-    parser.add_argument("--file", help="(Optional, python only) Local path to micropython .py program", widget="FileChooser")
+    group1 = parser.add_argument_group('Required Settings ')
+    group1.add_argument("--port", help="USB port SPIKE Prime is connected to. (Note: hub must be connected and turned on. Rerun this RAM Saver Tool after you have connected hub. )", required=True, widget='Dropdown', #choices=['1','2'])
+    choices=listSerial())
+
+    # groupM = parser.add_mutually_exclusive_group(required = True)
+    group2 = parser.add_argument_group('If program is on hub ')
+    group2.add_argument('--slot', help = 'What slot is your program currently stored in? (note: it will be overwritten with a new compiled version) ',widget='Dropdown', choices=["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"])
+
+    group3 = parser.add_argument_group('If program is local python file ')
+    group3.add_argument('--file', help = 'Local path to micropython .py program', widget='FileChooser')
+    group3.add_argument('--upload_slot', help = 'Which slot do you want your program uploaded to?',widget='Dropdown', choices=["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"])
+
+
+    # parser.add_argument()
+    # parser.add_argument("--slot", help="Current slot of program/Slot to upload to", required=True, widget='Dropdown',choices=["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"])
+    # parser.add_argument("--file", help="(Optional, python only) Local path to micropython .py program", widget="FileChooser")
 
     args = parser.parse_args()
+    print(args)
 
-    slot = int(args.slot)
     port = args.port
 
     mode = "hub"
     if args.file:
         mode = "file"
+        slot = int(args.upload_slot)
         handle_upload_rpc(port,args.file,slot)
+    else:
+        slot = int(args.slot)
 
-    version = "0.0.1"
+    version = "0.0.2"
 
     print(f"SPIKE Prime MPY Compiler v{version}")
 
