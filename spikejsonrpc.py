@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Code modified from https://github.com/nutki/spike-tools and https://github.com/sanjayseshan/spikeprime-tools
 import serial
 import base64
 import os
