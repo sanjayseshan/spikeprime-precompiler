@@ -9,3 +9,5 @@ Requirements:
 pip3 install click argparse tqdm pyserial gooey mpy_cross adafruit-ampy
 python3 convert.py
 ```
+
+If there are any issues, feel freee to open up a GitHub issue.
