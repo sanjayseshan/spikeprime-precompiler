@@ -6,6 +6,6 @@ See releases tab for more information/downloads.
 
 Requirements:
 ```
-pip3 install click argparse tqdm pyserial gooey mpy_cross gooey
+pip3 install click argparse tqdm pyserial gooey mpy_cross adafruit-ampy
 python3 convert.py
 ```
